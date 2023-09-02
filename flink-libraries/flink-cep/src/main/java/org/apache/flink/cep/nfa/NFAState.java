@@ -121,8 +121,75 @@ public class NFAState {
             return false;
         }
         NFAState nfaState = (NFAState) o;
-        return Arrays.equals(partialMatches.toArray(), nfaState.partialMatches.toArray())
-                && Arrays.equals(completedMatches.toArray(), nfaState.completedMatches.toArray());
+        for (ComputationState a : partialMatches) {
+            int flag = 0;
+            for (ComputationState b : nfaState.partialMatches) {
+                if (a.getCurrentStateName().equals(b.getCurrentStateName())
+                        && a.getStartTimestamp() == b.getStartTimestamp()
+                        && a.getPreviousTimestamp() == b.getPreviousTimestamp()
+                        && a.getVersion().toString().equals(b.getVersion().toString())) {
+                    flag = 1;
+                    if (a.getPreviousBufferEntry() != null) {
+                        if (a.getPreviousBufferEntry()
+                                .getPageName()
+                                .equals(b.getPreviousBufferEntry().getPageName())) {
+                            flag = 1;
+                        } else {
+                            flag = 0;
+                        }
+                    }
+                    if (a.getStartEventID() != null) {
+                        if (a.getStartEventID().getId() == b.getStartEventID().getId()
+                                && a.getStartEventID().getTimestamp()
+                                        == b.getStartEventID().getTimestamp()) {
+                        } else {
+                            flag = 0;
+                        }
+                    }
+                    if (flag == 1) {
+                        break;
+                    }
+                }
+            }
+            if (flag == 0) {
+                return false;
+            }
+        }
+        for (ComputationState a : completedMatches) {
+            int flag = 0;
+            for (ComputationState b : nfaState.completedMatches) {
+                if (a.getCurrentStateName().equals(b.getCurrentStateName())
+                        && a.getStartTimestamp() == b.getStartTimestamp()
+                        && a.getPreviousTimestamp() == b.getPreviousTimestamp()
+                        && a.getVersion().toString().equals(b.getVersion().toString())) {
+                    flag = 1;
+                    if (a.getPreviousBufferEntry() != null) {
+                        if (a.getPreviousBufferEntry()
+                                .getPageName()
+                                .equals(b.getPreviousBufferEntry().getPageName())) {
+                            flag = 1;
+                        } else {
+                            flag = 0;
+                        }
+                    }
+                    if (a.getStartEventID() != null) {
+                        if (a.getStartEventID().getId() == b.getStartEventID().getId()
+                                && a.getStartEventID().getTimestamp()
+                                        == b.getStartEventID().getTimestamp()) {
+                        } else {
+                            flag = 0;
+                        }
+                    }
+                    if (flag == 1) {
+                        break;
+                    }
+                }
+            }
+            if (flag == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
